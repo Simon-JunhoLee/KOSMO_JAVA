@@ -108,6 +108,8 @@ select count(*) from enrollments;
 
 desc enrollments;
 
+/* [예제 문제] */
+-- 1. 조회
 select pname, dept, title from professors;
 -- 교수 테이블에서 교수들이 근무하는 소속학과 이름을 검색하시오 (단, 중복 값은 제거하시오.)
 select distinct(dept) from professors;
@@ -221,7 +223,7 @@ where p.pcode = c.instructor
 and s.advisor = p.pcode
 and c.lname = '파일처리론';
 /*'데이터베이스'를 강의하는 교수명, 이 과목을 수강신청 한 학생들의 학과, 이름, 성적을 검색하시오.*/
-select s.dept, sname, grade
+select pname, s.dept, sname, grade
 from professors p, students s, courses c, enrollments e
 where p.pcode = c.instructor
 and c.lcode = e.lcode
@@ -234,3 +236,75 @@ where s.scode = e.scode
 and c.lcode = e.lcode
 and p.pcode = c.instructor
 and grade >= 80;
+
+/*3.조회*/
+/*3.교수들의 총 급여액과 평균 급여액을 구하시오.*/
+select sum(salary) salary_sum, avg(salary) salary_avg
+from professors;
+/*전산과 교수들의 총 급여액과 평균 급여액을 구하시오.*/
+select sum(salary) salary_sum, avg(salary) salary_avg
+from professors
+where dept = '전산';
+/*수강신청 한 과목들 중에서 최고 점수와 최저 점수를 구하시오.*/
+select max(grade) max_grade, min(grade) min_grade
+from enrollments;
+/*전산과 학생들은 모두 몇 명인지 구하시오.*/
+select count(*)
+from students
+where dept = '전산';
+/*수강신청 한 학생들은 모두 몇 명인지 구하시오.*/
+select count(distinct(scode))
+from enrollments;
+/*각 학과별 학생들의 수를 구하시오.*/
+select dept, count(scode)
+from students
+group by dept
+order by count(scode) desc;
+/*교수들을 소속학과별, 직급별로 분류하여 각 직급별 평균 급여액수를 구하시오.*/
+select dept, title, avg(salary) salary_avg
+from professors
+group by dept, title;
+/*각 학생들에 대해 학번, 학생이름, 수강신청 과목들의 평균 점수를 구하시오.*/
+select s.scode, sname, avg(grade) grade_avg
+from students s, enrollments e
+where s.scode = e.scode
+group by s.scode, sname;
+/*각 학생들에 대해 수강신청 과목들의 평균 점수를 구하시오.*/
+select s.scode, avg(grade) grade_avg
+from students s, enrollments e
+where s.scode = e.scode
+group by s.scode;
+/*수강신청 한 과목들을 학생별로 그룹핑하여 평균 점수를 구한 다음, 학생번호, 평균 점수를 성적이 높은 순으로 정렬하여 출력하시오.*/
+select scode, avg(grade) 
+from enrollments 
+group by scode 
+order by avg(grade) desc;
+/*수강신청 과목들의 평균 점수가 85점 이상인 학생들의 학생번호, 평균 점수를 구하시오.*/
+ select scode, avg(grade) 
+ from enrollments 
+ group by scode 
+ having avg(grade) >= 85;
+/*강좌별 평균점수가 80점 이상인 강좌들의 강좌번호와 평균점수를 출력하시오.*/
+ select lcode, avg(grade) 
+ from enrollments 
+ group by lcode 
+ having avg(grade) >= 80;
+/*학생수가 3명 이상인 학과 구한 다음, 학과명, 학생수를 출력하시오.*/
+ select dept, count(scode) 
+ from students 
+ group by dept 
+ having count(scode) >= 3;
+/*수강신청 평균점수가 85점 이상인 학생들의 학생번호, 학생이름, 평균 점수를 평균점수가 높은 순으로 출력하시오.*/
+select s.scode, sname, avg(grade) 
+from students s, enrollments e 
+where s.scode=e.scode 
+group by s.scode, sname 
+having avg(grade) >= 85 
+order by avg(grade) desc;
+/*강좌별 평균점수가 80점 이상인 강좌들의 강좌번호, 강좌명, 평균점수를 평균점수가 높은 순으로 출력하시오.*/
+select s.scode, sname, avg(grade) 
+from students s, enrollments e 
+where s.scode=e.scode 
+group by s.scode, sname 
+having avg(grade) >= 85
+order by avg(grade) desc;
