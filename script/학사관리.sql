@@ -264,11 +264,32 @@ order by count(scode) desc;
 select dept, title, avg(salary) salary_avg
 from professors
 group by dept, title;
-/*각 학생들에 대해 학번, 학생이름, 수강신청 과목들의 평균 점수를 구하시오.*/
+
+create view enr_stu_cou as
+select e.*, s.sname, c.lname
+from enrollments e, students s, courses c
+where e.scode = s.scode and e.lcode = c.lcode;
+
+select * from enr_stu_cou;
+
+create view enr_stu_pro as
+select e.*, p.pname, s.sname, s.dept
+from enrollments e, students s, professors p
+where e.scode=s.scode and p.pcode=s.advisor;
+
+select * from enr_stu_pro;
+
+/*각 학생들에 대해 학번, 학생이름, 수강신청 과목(코드, 과목명)들의 평균 점수를 구하시오.*/
 select s.scode, sname, avg(grade) grade_avg
 from students s, enrollments e
 where s.scode = e.scode
 group by s.scode, sname;
+
+select scode, sname, avg(grade)
+from enr_stu_cou
+group by scode, sname
+order by avg(grade) desc;
+
 /*각 학생들에 대해 수강신청 과목들의 평균 점수를 구하시오.*/
 select s.scode, avg(grade) grade_avg
 from students s, enrollments e
