@@ -329,3 +329,124 @@ where s.scode=e.scode
 group by s.scode, sname 
 having avg(grade) >= 85
 order by avg(grade) desc;
+
+/*4.조회*/
+/*'알고리즘'을 강의하는 교수의 교수번호, 교수이름, 소속학과를 검색하시오.*/
+select *
+from professors
+where pcode in (
+    select instructor
+    from courses
+    where lname = '알고리즘');
+/*강의실 '510'호에서 강의하는 교수의 교수번호, 교수이름, 소속학과를 검색하시오.*/
+select *
+from professors
+where pcode in (
+    select instructor
+    from courses
+    where room = '510');
+/*'김창덕' 학생이 소속된 학과에 재직하는 교수들의 이름, 직급, 임용일자를 검색하시오.*/
+select *
+from professors
+where dept in(
+    select dept
+    from students
+    where sname = '김창덕'
+);
+/*수강신청 과목의 점수가 80점 이상인 학생들의 이름, 학생번호, 소속학과, 학년을 검색하시오.*/
+select * 
+from students
+where scode in(
+    select scode
+    from enrollments
+    group by scode
+    having avg(grade) >= 80
+);
+/*'전산'과 교수들이 담당하는 강좌의 이름, 강의시간수, 강의실을 검색하시오.*/
+/*'98/03/02'에 수강신청 한 학생들의 학과, 학번, 학생이름, 학년을 검색하시오.*/
+/*'509'호에서 강의를 듣는 학생들의 학과, 학번, 학생이름을 검색하시오.*/
+/*수강신청 과목의 평균점수가 80점 이상인 학생들의 이름, 학생번호, 소속학과, 학년을 검색하시오.*/
+/*'건축'과 학생들을 지도하는 교수의 이름, 교수번호, 소속학과, 직급을 검색하시오.*/
+/*학생수가 '3'명 이상인 학과에 근무하는 교수들의 이름, 소속학과, 직급을 검색하시오.*/
+/*'이원구'가 수강신청한 과목의 번호, 과목명, 점수를 검색하시오.*/
+/*'알고리즘'을 수강신청한 학생들의 학번, 학생이름, 학과를 검색하시오.*/
+/*'1973'년생 학생들을 지도하는 교수들의 이름, 소속학과, 직급을 검색하시오.*/
+/*전체 학생의 30% 이상이 수강신청한 강좌의 번호를 검색하시오.*/
+
+/*1.갱신*/
+/*'98414022', '노진순', '75-05-10', '전산' 값을 학생테이블에 삽입하시오.*/
+insert into students(scode, sname, birthday, dept)
+values('98414022', '노진순', '75-05-10', '전산');
+select * from students;
+/*노진순의 수강신청 내용을 수강신청(Enrollments)테이블에 삽입하시오.*/
+ insert into enrollments(lcode, scode, edate) 
+ values('C301', '98414022', sysdate);
+/*'1998년 1월 1일' 이전에 발생한 모든 수강신청 데이터를 oldEnrollments테이블로 복사하시오.*/
+-- enrollments 테이블 복사
+create table oldEnrollments 
+as select * 
+from enrollments 
+where 1=2;
+
+insert into oldEnrollments(lcode, scode, edate, grade)
+select lcode, scode, edate, grade from enrollments where edate <= '98-03-03';
+
+select * from oldEnrollments;
+
+/*4학년 학생들의 모든 학생 데이터를 oldstudents 테이블로 복사하시오.*/
+-- students 테이블 복사
+create table oldStudents 
+as select * 
+from students 
+where 1=2;
+
+insert into oldStudents
+select * from students where year = 4;
+
+select * from oldStudents;
+
+/*학생테이블에서 '노진순'의 데이터를 삭제하시오.*/
+/*'1998년 1월 1일' 이전에 신청한 모든 수강신청 데이터를 삭제하시오.*/
+/*수강신청 한 과목에 대해 성적을 아직 받지 못한 수강신청 데이터를 삭제하시오.*/
+/*수강신청 한 과목에 대해 성적을 아직 받지 못한 수강신청 데이터를 삭제하시오.*/
+/*학생테이블에서 전산과 3학년 데이터를 4학년으로 변경하시오.*/
+/*'오문환' 교수의 직급을 '조교수'에서 '부교수'로 변경하시오.*/
+/*'건축과' 학생이 신청한 모든 수강신청 데이터를 삭제하시오.*/
+/*'전산'과 교수들의 급여를 10% 증가 시키시오.*/
+/*모든 교수들의 급여를 10% 증가 시키시오.*/
+/*'전자'과 학생들이 신청한 수강신청 데이터를 모두 삭제하시오.*/
+/*'전산'과 교수가 담당하는 강좌의 강의실을 모두 '123'호실로 변경하시오.*/
+
+/*2.갱신*/
+/*'이재광' 교수가 지도하는 학생들의 지도교수를 교수번호 '221'로 변경하시오.*/
+update professors
+set pcode = '221'
+where pcode in(
+    select *
+    from professors
+    where pname = '이재광');
+    
+select * from students;
+/*'파일처리론' 과목을 수강신청 한 학생들의 점수를 5점씩 증가 시키시오. */
+update enrollments
+set grade = grade + 5
+    where lcode in (
+    select lcode
+    from courses
+    where lname = '파일처리론');
+select * from enrollments;
+/*'전자'과 학생들이 수강신청 한 수강신청 데이터의 점수를 0점 처리 하시오.*/
+/*'서연우' 학생의 지도교수가 강의하는 강좌의 강의실을 '304'호로 변경하시오.*/
+/*'논리회로'를 강의하는 교수의 급여를 100000원 인상하시오.*/
+/*수강신청인원수가 80명 이상인 강좌를 강의하는 교수들의 급여를 100000원 인상하시오.*/
+/*서연우' 학생의 모든 과목 점수를 5점씩 감소 시키시오.*/
+/*'전산'과 3학년 학생들이 수강신청 한 과목들의 성적을 5점씩 증가 시키시오.*/
+/*'전산'과 '부교수'가 강의하는 강의시간수를 1씩 증가 시키시오.*/
+/*수강신청 한 과목이3과목 이상인 학생들의 학년을 1씩 증가 시키시오.*/
+/*수강신청 평균점수가 80점 미만인 학생들의 학년을 1씩 감소시키시오.*/
+/*'파일처리론'을 수강신청 한 학생들의 학과를 '건축'으로 수정하시오.*/
+/*강좌별 평균점수가 80점 이상인 과목들의 강의실을 '509'호로 변경하시오.*/
+/*'오문환' 교수가 강의하는 강좌를 신청한 수강신청 데이터를 삭제하시오.*/
+/*'자료구조'를 수강신청 한 학생의 학년을 1씩 증가 시키시오.*/
+
+commit;
